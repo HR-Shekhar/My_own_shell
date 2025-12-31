@@ -1,4 +1,6 @@
 # Rust Mini Shell
+  
+Version 1.0.0 
 
 A minimal interactive shell written in **Rust**, built to understand how real shells work at a low level.
 
