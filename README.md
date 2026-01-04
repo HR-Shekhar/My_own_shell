@@ -16,7 +16,9 @@ This project focuses on correctness, clarity, and learning core shell concepts r
 - Built-in commands:
   - `cd` (supports relative paths and home directory)
   - `pwd`
-  - `echo`
+  - `echo` (directly prints whatever given)
+  - `clear` (completely resets the terminal)
+  - `cls` (clears the screen but preserves history through scrollback)
   - `type`
   - `exit`
 - Shell-style argument parsing
