@@ -4,8 +4,14 @@ use pathsearch::find_executable_in_path;
 use std::process::Command;
 use crossterm::{cursor::MoveTo, execute, terminal::{self, Clear}};
 
-
-fn clear_screen(){
+fn clear_screen() {
+    execute!(
+        io::stdout(),
+        Clear(terminal::ClearType::All),
+        MoveTo(0,0)
+    ).unwrap();
+}
+fn reset_terminal() {
     execute!(
         io::stdout(),
         Clear(terminal::ClearType::All),
@@ -40,7 +46,7 @@ fn change_directory(args: &[&str]){
 
 fn main() {
 
-    let built_ins = ["echo", "exit", "type", "pwd", "cd", "clear"];
+    let built_ins = ["echo", "exit", "type", "pwd", "cd", "clear", "cls"];
 
     loop {
         print!("$ ");
@@ -63,7 +69,8 @@ fn main() {
             match command {
                 "echo" => println!("{}",arguments),
                 "exit" => break,
-                "clear"=> clear_screen(),
+                "clear"=> reset_terminal(),
+                "cls" => clear_screen(), 
                 "pwd" => println!("{}", std::env::current_dir().unwrap().display()),
                 "type" => {
                     if let Some(arg) = args.get(0){
@@ -78,7 +85,7 @@ fn main() {
                 },
                 "cd" => change_directory(&args),
 
-                // Prints the "<command>: command not found" message
+                // Prints the "<command>: command not implemented" message
                 _ => println!("{}: command not implemented yet.", command)
             }
 
