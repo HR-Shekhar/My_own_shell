@@ -2,6 +2,17 @@
 use std::io::{self, Write};
 use pathsearch::find_executable_in_path;
 use std::process::Command;
+use crossterm::{cursor::MoveTo, execute, terminal::{self, Clear}};
+
+
+fn clear_screen(){
+    execute!(
+        io::stdout(),
+        Clear(terminal::ClearType::All),
+        Clear(terminal::ClearType::Purge),
+        MoveTo(0,0)
+    ).unwrap();
+}
 
 fn execute_program(cmd: &str, args: &[&str]) {
     match Command::new(cmd).args(args).status() {
@@ -27,64 +38,9 @@ fn change_directory(args: &[&str]){
     }
 }
 
-// fn builtin_echo(argument: &str){
-
-// }
-
-// fn parse_args(input: &str) -> Vec<String> {
-//     enum State {
-//         Normal,
-//         SingleQuote,
-//         DoubleQuote,
-//     }
-
-//     let mut args = Vec::new();
-//     let mut current = String::new();
-//     let mut state = State::Normal;
-
-//     for c in input.chars() {
-//         match state {
-//             State::Normal => match c {
-//                 ' ' => {
-//                     if !current.is_empty() {
-//                         args.push(current.clone());
-//                         current.clear();
-//                     }
-//                 }
-//                 '\'' => state = State::SingleQuote,
-//                 '"' => state = State::DoubleQuote,
-//                 _ => current.push(c),
-//             },
-
-//             State::SingleQuote => {
-//                 if c == '\'' {
-//                     state = State::Normal;
-//                 } else {
-//                     current.push(c);
-//                 }
-//             }
-
-//             State::DoubleQuote => {
-//                 if c == '"' {
-//                     state = State::Normal;
-//                 } else {
-//                     current.push(c);
-//                 }
-//             }
-//         }
-//     }
-
-//     if !current.is_empty() {
-//         args.push(current);
-//     }
-
-//     args
-// }
- 
-
 fn main() {
 
-    let built_ins = ["echo", "exit", "type", "pwd", "cd"];
+    let built_ins = ["echo", "exit", "type", "pwd", "cd", "clear"];
 
     loop {
         print!("$ ");
@@ -107,6 +63,7 @@ fn main() {
             match command {
                 "echo" => println!("{}",arguments),
                 "exit" => break,
+                "clear"=> clear_screen(),
                 "pwd" => println!("{}", std::env::current_dir().unwrap().display()),
                 "type" => {
                     if let Some(arg) = args.get(0){
@@ -122,7 +79,7 @@ fn main() {
                 "cd" => change_directory(&args),
 
                 // Prints the "<command>: command not found" message
-                _ => println!("{}: command not found", command)
+                _ => println!("{}: command not implemented yet.", command)
             }
 
         } else if find_executable_in_path(command).is_some() {
