@@ -1,6 +1,6 @@
 # Rust Mini Shell
   
-Version 1.0.0 
+Version 1.0.1 
 
 A minimal interactive shell written in **Rust**, built to understand how real shells work at a low level.
 
@@ -11,6 +11,7 @@ This project focuses on correctness, clarity, and learning core shell concepts r
 ## Features
 
 ### Implemented
+- Autocompletion is implemented but a little bit slow
 - Interactive REPL loop
 - Execute external programs via `$PATH`
 - Built-in commands:
@@ -30,7 +31,6 @@ This project focuses on correctness, clarity, and learning core shell concepts r
 
 ### Not Implemented
 - `ls` (relies on external system `ls` if available)
-- Autocompletion
 - Command history
 - Pipes and redirection
 - Environment variable expansion

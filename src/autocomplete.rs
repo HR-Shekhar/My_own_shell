@@ -30,7 +30,6 @@ fn executable_in_path() -> Vec<String> {
                 if !path.is_file(){
                     continue;
                 }
-                // println!("{:#?}",path.file_name());
                 if let Some(name) = path.file_name().and_then(|n| n.to_str()) {
                     cmds.push(name.to_string());
                 }
