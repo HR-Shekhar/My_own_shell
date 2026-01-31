@@ -4,27 +4,27 @@ use std::fs;
 const BUILTINS: [&str; 5] = ["echo", "exit", "type", "pwd", "cd"];
 
 
-pub fn complete(prefix: &str) -> Option<String> {
-        let executables = executable_in_path();
+// pub fn complete(prefix: &str) -> Option<String> {
+//         let executables = executable_in_path();
 
-        for cmd in BUILTINS {
-            if cmd.starts_with(prefix) {
-                return Some(cmd.to_string());
-            }
-        }
-        for exec in executables {
-            if exec.starts_with(prefix) {
-                return Some(exec);
-            }
-        }
-        None
-    }
+//         for cmd in BUILTINS {
+//             if cmd.starts_with(prefix) {
+//                 return Some(cmd.to_string());
+//             }
+//         }
+//         for exec in executables {
+//             if exec.starts_with(prefix) {
+//                 return Some(exec);
+//             }
+//         }
+//         None
+//     }
 
 fn executable_in_path() -> Vec<String> {
     let mut cmds = Vec::new();
     let  path = env::var("PATH").unwrap_or_default();
     for dir in env::split_paths(&path) {
-        if let Ok(entries) = fs::read_dir(dir) {
+        if let Ok(entries) = fs::read_dir(dir) {   //read_dir is used beacuse its a PathBuf not a string
             for entry in entries.flatten() {
                 let path = entry.path();
                 if !path.is_file(){
@@ -37,4 +37,20 @@ fn executable_in_path() -> Vec<String> {
         }
     }
     cmds
+}
+
+pub fn all_matches(prefix: &str) -> Vec<String>{
+    let mut matching = Vec::new();
+    for cmd in BUILTINS {
+        if cmd.starts_with(prefix) {
+            matching.push(cmd.to_string());
+        }
+    }
+    let executables = executable_in_path();
+    for exec in executables {
+        if exec.starts_with(prefix) {
+            matching.push(exec);
+        }
+    }
+    return matching
 }

@@ -17,6 +17,8 @@ fn main() {
         let mut buffer = String::new();   //stores what user typed
         let mut cursor = 0;                  //stores current position of the cursor
 
+        let mut last_was_tab = false;
+        let mut tab_prefix = None;
 
         enable_raw_mode().unwrap();
         loop {
@@ -60,11 +62,53 @@ fn main() {
 
                     // 4. TAB AUTOCOMPLETE
                     KeyCode::Tab => {
-                        if let Some(cmd) = autocomplete::complete(&buffer) {
-                            buffer = format!("{} ", cmd);
-                            cursor = buffer.len();
+                        let prefix = buffer
+                            .split_whitespace()
+                            .last()
+                            .unwrap_or("");
+
+                        if !last_was_tab {
+                            // FIRST TAB
+                            let matches = autocomplete::all_matches(prefix);
+
+                            if matches.len() == 1 {
+                                // Only one match → commit immediately
+                                let before = buffer
+                                    .rsplit_once(prefix)
+                                    .map(|(a, _)| a)
+                                    .unwrap_or("");
+
+                                buffer = format!("{before}{} ", matches[0]);
+                                cursor = buffer.len();
+                            } else if matches.len() > 1 {
+                                // Multiple matches → remember prefix, do nothing
+                                tab_prefix = Some(prefix.to_string());
+                            }
+
+                            last_was_tab = true;
+                        } else {
+                            // SECOND TAB
+                            let prefix = tab_prefix
+                                .as_deref()
+                                .unwrap_or(prefix);
+                            if prefix != "" {
+                                let matches = autocomplete::all_matches(prefix);
+                            
+                                println!();
+                                for m in &matches {
+                                    print!("{m}\n");
+                                }
+                                println!();
+                            }
+                            // Redraw prompt without changing buffer
+                            print!("$ {}", buffer);
+                            io::stdout().flush().unwrap();
+
+                            last_was_tab = false;
+                            tab_prefix = None;
                         }
                     }
+
 
                     KeyCode::Enter => break,
                     _ => {}
